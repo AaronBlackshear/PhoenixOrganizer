@@ -1,0 +1,13 @@
+.sidebar-icon {
+    font-size: 22px;
+}
+
+.ant-layout {
+    min-height: 100vh !important;
+}
+
+.ant-layout-sider-trigger {
+    background: white;
+    color: #002140;
+    /* border-top: 1px solid #002140; */
+}
