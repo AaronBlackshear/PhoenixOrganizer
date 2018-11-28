@@ -1,0 +1,1 @@
+SELECT * FROM users WHERE auth_token_one = $1

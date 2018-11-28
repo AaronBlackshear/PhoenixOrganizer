@@ -65,9 +65,10 @@ export const addEvent = (event, category, date, startTime, endTime) => {
       endTime,
     }, {
         headers: {
+          user_id: localUser.userIdentifier,
+          authtoken: localUser.authTokenOne,
           email: localUser.email,
           password: localUser.password,
-          authToken: localUser.authTokenOne,
         },
       }),
   }
