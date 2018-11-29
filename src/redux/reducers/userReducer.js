@@ -8,42 +8,45 @@ const initialState = {
 }
 
 const LOGIN_USER = 'LOGIN_USER'
+const SIGN_UP_USER = 'SIGN_UP_USER'
 
 function userReducer (state = initialState, action) {
   switch (action.type) {
+    case `${SIGN_UP_USER}_FULFILLED`:
+      return { ...state, loading: false, loggedIn: true, user: action.payload.data[0] }
     case `${LOGIN_USER}_PENDING`:
       return { ...state, loading: true }
     case `${LOGIN_USER}_FULFILLED`:
-      window.location.href = '/'
       const { 
         username,
         email,
-        password,
-        authTokenOne,
-        authTokenTwo,
-        userIdentifier,
-        emailVerified,
-      } = action.payload.data[0];
+        auth_token,
+        user_identifier,
+      } = action.payload.data;
 
       localStorage.setItem('user', JSON.stringify({
         username,
         email,
-        password,
-        authTokenOne,
-        authTokenTwo,
-        userIdentifier,
-        emailVerified,
+        auth_token,
+        user_identifier,
       }))
 
       return {
         ...state,
-        user: action.payload.data[0],
+        user: action.payload.data,
         loading: false,
         loggedIn: true
       }
 
     default:
       return { ...state }
+  }
+}
+
+export const signUpUser = (email, password) => {
+  return {
+    type: SIGN_UP_USER,
+    payload: axios.post(base_url + '/create_user', { email, password })
   }
 }
 

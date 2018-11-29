@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import './App.css';
-import Login from './components/LoginForm';
-import Home from './components/Home';
+import LoggedInRoutes from './routes/loggedInRoutes'
+import LoggedOutRoutes from './routes/loggedOutRoutes'
 
 class App extends Component {
   state = {
@@ -11,6 +11,7 @@ class App extends Component {
 
   componentDidMount() {
     const userInfo = window.localStorage.getItem('user');
+    console.log(userInfo);
     userInfo && this.setState({ userInfo });
   }
 
@@ -18,7 +19,7 @@ class App extends Component {
     const { userInfo } = this.state;
     return (
       <div className="App">
-        {!userInfo ? <Login /> : <Home />}
+        { userInfo ? <LoggedInRoutes /> : <LoggedOutRoutes /> }
       </div>
     );
   }

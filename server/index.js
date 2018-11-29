@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const session = require('express-session')
 const massive = require('massive')
+const cookieParser = require('cookie-parser');
 const { json } = require('body-parser')
 const cors = require('cors')
 const PORT = 3001
@@ -12,8 +13,16 @@ const userCtrl = require('./controllers/user_controller')
 const calendarCtrl = require('./controllers/calender_controller')
 const { SESSION_SECRET, DATABASE_URL } = process.env
 
+// MIDDLEWARE
 app.use(json())
 app.use(cors())
+app.use(cookieParser());
+// app.use((req, res, next) => {
+//   if (!req.cookies.token) {
+
+//   }
+//   next();
+// });
 
 massive(DATABASE_URL)
   .then(db => app.set('db', db))
@@ -30,10 +39,11 @@ app.use(
   })
 )
 
+app.post('/api/create_user', userCtrl.createUser)
 app.post('/api/login_user', userCtrl.loginUser)
-app.get('/api/get_events', calendarCtrl.getEvents)
-app.post('/api/add_event', calendarCtrl.addEvent)
-app.get('/api/get_categories', calendarCtrl.getCategories)
+// app.get('/api/get_events', calendarCtrl.getEvents)
+// app.post('/api/add_event', calendarCtrl.addEvent)
+// app.get('/api/get_categories', calendarCtrl.getCategories)
 
 app.listen(PORT, () =>
   console.log(`Listening on port ${PORT || 'Port Not Defined'}!`)

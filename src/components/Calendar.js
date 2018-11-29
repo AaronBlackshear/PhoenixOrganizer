@@ -7,6 +7,7 @@ import '../css/calendar.css'
 import changeCalendarNames from '../utils/changeCalendarNames'
 import { getAllEvents, getCategories } from '../redux/reducers/calendarReducer'
 import setCalendarEvents from "../utils/setCalendarEvents";
+import axios from 'axios';
 
 const monthNames = [
   "January",
@@ -55,6 +56,11 @@ class CalendarComponent extends Component {
     this.setState({ showModal: bool })
   }
 
+  handleReq = () => {
+    axios.post('http://localhost:3001/api/create_user', { email: 'aaron@cratebind.com', password: '1234' })
+      .then(response => console.log(response))
+  }
+
   render() {
     const { currentMonth, currentYear, showModal, selectedDate } = this.state
     const { calendar } = this.props;
@@ -62,26 +68,26 @@ class CalendarComponent extends Component {
     const dateCellRender = value => {
       const dateEvents =
         setCalendarEvents(value, calendar.events, currentMonth);
-      
-        if (dateEvents) {
-          return (
-            <ul className="events">
-              {
-                dateEvents.map(event => {
-                  let category = calendar.categories.find(category => (
-                    category.category_name === event.category
-                  ))
 
-                  return (
-                    <li key={event.id}>
-                      <Badge status={category ? category.color : 'success'} text={event.event_body} />
-                    </li>
-                  )
-                })
-              }
-            </ul>
-          )
-        }
+      if (dateEvents) {
+        return (
+          <ul className="events">
+            {
+              dateEvents.map(event => {
+                let category = calendar.categories.find(category => (
+                  category.category_name === event.category
+                ))
+
+                return (
+                  <li key={event.id}>
+                    <Badge status={category ? category.color : 'success'} text={event.event_body} />
+                  </li>
+                )
+              })
+            }
+          </ul>
+        )
+      }
     }
 
     return (
@@ -100,6 +106,7 @@ class CalendarComponent extends Component {
           onChange={e => this.changeDate(e)}
           onSelect={e => (this.changeDate(e), this.toggleModal(true))}
         />
+        <button onClick={this.handleReq}>click</button>
       </div>
     )
   }
