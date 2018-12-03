@@ -1,49 +1,43 @@
 import React, { Component, Fragment } from 'react'
 import { connect } from 'react-redux'
-import { Layout } from 'antd'
 import Sidebar from '../components/Sidebar'
 import LoadingScreen from './LoadingScreen'
 import LoginForm from './LoginForm'
 
-const { Content } = Layout
-
 class Index extends Component {
   state = {
     user: {},
-    loading: null,
   }
 
   componentDidMount() {
-    this.setState({ loading: false })
     const user = JSON.parse(localStorage.getItem('user'))
-    user && this.setState({ user })
+    user.auth_token && this.setState({ user })
   }
 
   render() {
     const { auth } = this.props
-    const { user, loading } = this.state
+    const { user } = this.state
 
     return (
       <Fragment>
-        {
-          loading !== null
-            ? auth.user.authTokenOne || user.authTokenOne
+        {/* {
+          user.user_identifier
+            ? ()
+        } */}
+        {/* {
+            ? auth.user.user_identifier || user.user_identifier
               ? (
-                <Layout>
-                  {auth.user &&
-                    ((user.authTokenOne || auth.user.authTokenOne) && <Sidebar />)}
+                  {auth.user.user_identifier &&
+                    ((user.user_identifier || auth.user.user_identifier) && <Sidebar />)}
 
-                  <Content>
                     {this.props.children}
-                  </Content>
 
-                </Layout>
               )
               : (
                 <LoginForm />
               )
             : <LoadingScreen />
-        }
+        } */}
       </Fragment>
     )
   }

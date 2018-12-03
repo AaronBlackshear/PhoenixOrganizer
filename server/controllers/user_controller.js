@@ -6,42 +6,36 @@ const tokGen = new TokenGenerator();
 
 const createUser = async (req, res) => {
   const db = req.app.get('db')
+  // Lowercase the clients email above destructure to keep it a constant
+  req.body.email = req.body.email.toLowerCase();
   const { email, password } = req.body
+  // Encrypt the users password
   const encryptedPassword = await bcrypt.hash(password, 10)
-  let userIdExists = false;
-  let user_identifier;
-
-  const generateToken = response => {
-    const uniqueToken = tokGen.generate();
-    response.forEach(obj => {
-      if (obj.user_identifier === uniqueToken) userIdExists = true
-    })
-
-    if (userIdExists) {
-      generateToken()
-    }
-    user_identifier = uniqueToken;
-  }
+  // Generate a unique id for the user using their email
+  const user_identifier = await bcrypt.hash(email, 10)
+  // generate auth_token
+  const auth_token = tokGen.generate()
 
   db
-    .check_user_id()
-    .then(response => {
-      generateToken(response)
-      const token = jwt.sign({ userId: response.user_identifier }, process.env.APP_SECRET)
+    .create_user([email, encryptedPassword, auth_token, user_identifier])
+    .then(user => {
+      const token = jwt.sign({ auth_token }, process.env.APP_SECRET);
 
-      db
-        .create_user([email, encryptedPassword, token, user_identifier])
-        .then(response => {
-          res.cookie('token', token, {
-            httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 24 * 31,
-          })
-    
-          res.status(200).json(response)
-        })
-        .catch(err => console.log(err))
+      // set token as a cookie to authorize user on each request
+      res.cookie('token', token, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 31,
+        secure: false,
+      })
+
+      // send back user's info
+      res.status(200).json({
+        username: user[0].username,
+        email: user[0].email,
+        user_identifier: user[0].user_identifier,
+      })
     })
-    .catch(err => console.log(err))
+    .catch(err => res.status(500).json(err))
 }
 
 const loginUser = (req, res) => {
@@ -67,5 +61,5 @@ const loginUser = (req, res) => {
 
 module.exports = {
   createUser,
-  loginUser
+  loginUser,
 }

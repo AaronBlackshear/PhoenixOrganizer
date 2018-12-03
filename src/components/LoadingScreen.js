@@ -1,5 +1,4 @@
 import React from 'react'
-import { Spin } from 'antd';
 import styled from 'styled-components';
 
 const LoadingContainer = styled.div`
@@ -13,7 +12,7 @@ const LoadingContainer = styled.div`
   left: 0;
   z-index: 100;
 
-  >div .antspin {
+  >div .spin {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -24,7 +23,9 @@ const LoadingContainer = styled.div`
 export default function LoadingScreen() {
   return (
     <LoadingContainer>
-      <Spin size="large" />
+      <div className="spin">
+        LOADING...
+      </div>
     </LoadingContainer>
   )
 }
