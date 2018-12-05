@@ -33,8 +33,12 @@ massive(DATABASE_URL)
   .then(db => app.set('db', db))
   .catch(err => console.log('MASSIVE ERROR: ', err))
 
+// User Endpoints
+app.get('/api/logout_user', userCtrl.logoutUser)
 app.post('/api/create_user', userCtrl.createUser)
 app.post('/api/login_user', userCtrl.loginUser)
+
+// Calendar Endpoints
 app.get('/api/get_events', calendarCtrl.getEvents)
 app.post('/api/add_event', calendarCtrl.addEvent)
 app.get('/api/get_categories', calendarCtrl.getCategories)

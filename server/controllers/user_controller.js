@@ -46,11 +46,27 @@ const loginUser = (req, res) => {
     .get_user([ username ])
     .then(async response => {
       if(bcrypt.compareSync(password, response[0].password)) {
+        const {
+          username,
+          email,
+          auth_token,
+          user_identifier,
+        } = response[0];
+
+        const token = jwt.sign({ auth_token }, process.env.APP_SECRET);
+
+        // set token as a cookie to authorize user on each request
+        res.cookie('token', token, {
+          httpOnly: true,
+          maxAge: 1000 * 60 * 60 * 24 * 31,
+          secure: false,
+        })
+
         res.status(200).json({
-          username: response[0].username,
-          email: response[0].email,
-          auth_token: response[0].auth_token,
-          user_identifier: response[0].user_identifier,
+          username,
+          email,
+          auth_token,
+          user_identifier,
         })
       } else {
           res.status(401).json('Invalid Password')
@@ -59,7 +75,13 @@ const loginUser = (req, res) => {
     .catch(err => res.status(500).json(err))
 }
 
+const logoutUser = (req, res) => {
+  res.clearCookie('token');
+  res.status(200).json('Logged Out');
+}
+
 module.exports = {
   createUser,
   loginUser,
+  logoutUser,
 }

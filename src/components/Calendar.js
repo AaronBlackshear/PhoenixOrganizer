@@ -6,6 +6,7 @@ import EventsModal from './CalendarComponents/EventsModal'
 import '../css/calendar.css'
 import changeCalendarNames from '../utils/changeCalendarNames'
 import { getAllEvents, getCategories } from '../redux/reducers/calendarReducer'
+import { logoutUser } from '../redux/reducers/userReducer'
 import setCalendarEvents from "../utils/setCalendarEvents";
 import axios from 'axios';
 
@@ -35,12 +36,12 @@ class CalendarComponent extends Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    const currentUser = JSON.parse(localStorage.getItem('user'));
+    const { auth, dispatch } = this.props;
+    console.log(auth);
     changeCalendarNames()
     this.changeDate(moment(Date.now()));
-    dispatch(getAllEvents(currentUser.userIdentifier))
-    dispatch(getCategories(currentUser.userIdentifier))
+    // dispatch(getAllEvents(auth.user.user_identifer))
+    // dispatch(getCategories(auth.user.user_identifer))
   }
 
   changeDate = value => {
@@ -63,7 +64,7 @@ class CalendarComponent extends Component {
 
   render() {
     const { currentMonth, currentYear, showModal, selectedDate } = this.state
-    const { calendar } = this.props;
+    const { calendar, dispatch } = this.props;
 
     const dateCellRender = value => {
       const dateEvents =
@@ -92,6 +93,7 @@ class CalendarComponent extends Component {
 
     return (
       <div>
+        <button onClick={() => dispatch(logoutUser())}>Log Out</button>
         <h1>
           <span>{monthNames[currentMonth - 1]}</span>
           <span>{currentYear}</span>
@@ -112,6 +114,9 @@ class CalendarComponent extends Component {
   }
 }
 
-const mapStateToProps = state => ({ calendar: state.calendarReducer });
+const mapStateToProps = state => ({
+  calendar: state.calendarReducer,
+  auth: state.userReducer,
+});
 
 export default connect(mapStateToProps)(CalendarComponent);

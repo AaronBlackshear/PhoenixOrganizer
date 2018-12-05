@@ -1,22 +1,17 @@
 import axios from 'axios'
 
 const initialState = {
-  user: {},
-  loggedIn: false,
-  loading: false
+  user: null,
 }
 
 const LOGIN_USER = 'LOGIN_USER'
+const LOGOUT_USER = 'LOGOUT_USER'
 const SIGN_UP_USER = 'SIGN_UP_USER'
 
 function userReducer (state = initialState, action) {
   switch (action.type) {
-    case `${SIGN_UP_USER}_PENDING`:
-      return { ...state, loading: true }
     case `${SIGN_UP_USER}_FULFILLED`:
-      return { ...state, loading: false, loggedIn: true, user: action.payload.data[0] }
-    case `${LOGIN_USER}_PENDING`:
-      return { ...state, loading: true }
+      return { user: action.payload.data[0] }
     case `${LOGIN_USER}_FULFILLED`:
       const { 
         username,
@@ -25,22 +20,17 @@ function userReducer (state = initialState, action) {
         user_identifier,
       } = action.payload.data;
 
-      if (auth_token) {
-        localStorage.setItem('user', JSON.stringify({
-          username,
-          email,
-          auth_token,
-          user_identifier,
-        }))
+      return auth_token
+        ? { user: {
+            username,
+            email,
+            auth_token,
+            user_identifier,
+          } }
+        : { ...state }
 
-        return {
-          ...state,
-          user: action.payload.data,
-          loading: false,
-          loggedIn: true
-        }
-      }
-      return { ...state }
+    case `${LOGOUT_USER}_FULFILLED`:
+      return initialState;
 
     default:
       return { ...state }
@@ -58,6 +48,13 @@ export const loginUser = (username, password) => {
   return {
     type: LOGIN_USER,
     payload: axios.post('/api/login_user', { username, password })
+  }
+}
+
+export const logoutUser = () => {
+  return {
+    type: LOGOUT_USER,
+    payload: axios.get('/api/logout_user')
   }
 }
 
